@@ -1,11 +1,15 @@
-FROM maven
+FROM node:22-slim
 
 WORKDIR /root
-COPY pom.xml /root/pom.xml
-COPY src /root/src
+COPY package.json package-lock.json /root/
+RUN npm ci
 
-RUN mvn install
+COPY tsconfig.json tsconfig.build.json /root/
+COPY src /root/src
+COPY resources /root/resources
+
+RUN npm run build
 
 EXPOSE 8080
 
-CMD ["bash", "-c", "java -Xmx256M -jar target/amazon-echo-bridge-*.jar --upnp.config.address=$(ip route get 8.8.8.8 | egrep -o '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\s*$')"]
+CMD ["bash", "-c", "node dist/index.js --upnp.config.address=$(ip route get 8.8.8.8 | egrep -o '[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\s*$')"]

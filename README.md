@@ -17,19 +17,19 @@ Ive seen some folks able to run this but not able to discover devices. I would r
 
 ## Quick Start
 
-There are currently three different ways to run the pre-built jar file:
+There are currently three different ways to run the bridge:
 
-**Java -** ```java -jar amazon-echo-bridge-*.jar```
+**Node -** ```node dist/index.js```
 
-**Maven -** ```mvn spring-boot:run```
+**npm -** ```npm start```
 
 **Docker -** ```docker build -t amazon-echo-ha-bridge .
 docker run -ti --rm --net=host amazon-echo-ha-bridge```
 
- Additionally, it's also recommended you pass the command line arguments ```--upnp.config.address``` and ```--server.port``` to override the hardcoded values currently implemented.
+ The command line argument ```--upnp.config.address``` is required; it's also recommended you pass ```--emulator.portbase``` to override the hardcoded value currently implemented.
 
 **Examples:**
-```--upnp.config.address=192.168.1.240 --server.port=8081```
+```--upnp.config.address=192.168.1.240 --emulator.portbase=8081```
 
 After the application is started and running, you can access the configurator by accessing http://YOURIP:PORT/configurator.html. 
 
@@ -47,25 +47,34 @@ To view or remove devices that Alexa knows about, you can use the mobile app Men
 
 In case you would like to internally configure your own build of the Amazon Echo Bridge, a few requisites are required.
 
-### Install Maven: 
+### Install Node.js:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Ubuntu/Linux** - ```sudo apt-get install maven```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Ubuntu/Linux** - ```sudo apt-get install nodejs npm```
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-**OS X** - Install [Homebrew](http://brew.sh/) and run ```brew install maven```
+**OS X** - Install [Homebrew](http://brew.sh/) and run ```brew install node```
+
+Node.js 18 or newer is required.
 
 ### Make Changes:
-For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you could edit ```server.port``` in ```src/main/resources/application.properties``` to your desired port before building the jar. 
+For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you could edit ```emulator.portbase``` in ```resources/application.properties``` to your desired port before building. 
 
-Alternatively you could also pass in a command line argument to override ```server.port```.
+Alternatively you could also pass in a command line argument to override ```emulator.portbase```.
 
 ### Compile:
-To build the jar file yourself, make your changes and simply run Maven like this:
+To build the bridge yourself, make your changes and simply run:
 ```
-mvn install
+npm install
+npm run build
 ```
 
-Then locate the jar and start the server using the instructions above. By default maven will put the jar file in the target directory. ```java -jar target/amazon-echo-bridge-*.jar``` 
+Then start the server using the instructions above. By default the compiled JavaScript lands in the `dist` directory. ```node dist/index.js```
+
+### Test:
+```
+npm run verify
+```
+runs the linter, the strict type check and the test suite with coverage.
 
 ## POST/PUT REST API
 
